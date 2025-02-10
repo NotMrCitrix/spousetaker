@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload your Cult of The Lamb Spouses!</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Dark mode base styles */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      padding-bottom: 50px;
+      cursor: none; /* Hide the default cursor */
+      overflow-x: hidden;
+    }
+    
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid red;
+    }
+    header h1 {
+      margin-bottom: 5px;
+      color: red;
+    }
+    header p {
+      color: #ccc;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #222;
+      border-radius: 8px;
+    }
+    
+    .upload-form {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .upload-form input[type="text"],
+    .upload-form input[type="file"] {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 5px 0;
+      width: 80%;
+      max-width: 300px;
+      transition: transform 0.2s ease;
+    }
+    .upload-form input[type="text"]:hover,
+    .upload-form input[type="file"]:hover {
+      transform: scale(1.05);
+    }
+    .upload-form input[type="submit"] {
+      background-color: red;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .upload-form input[type="submit"]:hover {
+      transform: scale(1.1);
+      background-color: #ff4d4d;
+    }
+    
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .feed-item {
+      background-color: #333;
+      padding: 10px;
+      border-radius: 4px;
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .feed-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.5);
+    }
+    .feed-item:nth-child(odd) {
+      animation-delay: 0.1s;
+    }
+    .feed-item:nth-child(even) {
+      animation-delay: 0.2s;
+    }
+    .feed-item img {
+      max-width: 100%;
+      border-radius: 4px;
+    }
+    .info {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Custom Cursor Styles */
+    #cursor-inner,
+    #cursor-outer {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+      transition: transform 0.1s ease-out;
+    }
+    /* Inner cursor: a small, solid red dot */
+    #cursor-inner {
+      width: 8px;
+      height: 8px;
+      background-color: red;
+    }
+    /* Outer cursor: a larger circle with a red border that trails */
+    #cursor-outer {
+      width: 30px;
+      height: 30px;
+      border: 2px solid red;
+      opacity: 0.7;
+    }
+    
+    /* Ripple effect on click */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background-color: rgba(255, 0, 0, 0.4);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      animation: rippleEffect 0.6s ease-out forwards;
+      z-index: 9999;
+    }
+    @keyframes rippleEffect {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0.8;
+      }
+      100% {
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+      }
+    }
+    
+    /* Cursor pulse effect on click */
+    .click-effect {
+      animation: clickPulse 0.4s ease-out;
+    }
+    @keyframes clickPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+    
+    /* Hover scaling for interactive elements */
+    a:hover ~ #cursor-inner,
+    a:hover ~ #cursor-outer,
+    input:hover ~ #cursor-inner,
+    input:hover ~ #cursor-outer,
+    button:hover ~ #cursor-inner,
+    button:hover ~ #cursor-outer {
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Upload your Cult of The Lamb Spouses!</h1>
+    <p>by MrCartix</p>
+  </header>
+  <div class="container">
+    <form class="upload-form" method="POST" enctype="multipart/form-data">
+      <input type="text" name="username" placeholder="Enter your username" required>
+      <br>
+      <input type="file" name="image" accept="image/*" required>
+      <br>
+      <input type="submit" value="Upload">
+    </form>
+    <div class="feed">
+      {% for image in images %}
+        <div class="feed-item">
+          <img src="{{ url_for('static', filename='uploads/' ~ image['filename']) }}" alt="Uploaded Image">
+          <div class="info">
+            Uploaded by: <strong>{{ image['username'] }}</strong> on {{ image['uploaded_at'] }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+  <!-- Custom Cursor Elements -->
+  <div id="cursor-inner"></div>
+  <div id="cursor-outer"></div>
+  
+  <!-- JavaScript for Animated Custom Cursor with Click & Ripple Effects -->
+  <script>
+    const cursorInner = document.getElementById('cursor-inner');
+    const cursorOuter = document.getElementById('cursor-outer');
+    
+    // Track mouse position
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let outerX = mouseX, outerY = mouseY;
+    
+    // Update inner cursor position instantly on mouse move
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursorInner.style.left = mouseX + 'px';
+      cursorInner.style.top = mouseY + 'px';
+    });
+    
+    // Animate outer cursor with a higher easing factor for a more responsive effect
+    function animateOuterCursor() {
+      outerX += (mouseX - outerX) * 0.5; // increased from 0.2 to 0.5 for faster follow
+      outerY += (mouseY - outerY) * 0.5;
+      cursorOuter.style.left = outerX + 'px';
+      cursorOuter.style.top = outerY + 'px';
+      requestAnimationFrame(animateOuterCursor);
+    }
+    animateOuterCursor();
+    
+    // Add click effects: pulse the cursors and show a ripple at the click position
+    document.addEventListener('mousedown', (e) => {
+      // Add pulse effect to cursors
+      cursorInner.classList.add('click-effect');
+      cursorOuter.classList.add('click-effect');
+      
+      // Create ripple element at the click position
+      const ripple = document.createElement('div');
+      ripple.classList.add('ripple');
+      ripple.style.left = e.clientX + 'px';
+      ripple.style.top = e.clientY + 'px';
+      document.body.appendChild(ripple);
+      
+      // Remove the ripple element after animation ends
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    });
+    document.addEventListener('mouseup', () => {
+      setTimeout(() => {
+        cursorInner.classList.remove('click-effect');
+        cursorOuter.classList.remove('click-effect');
+      }, 400);
+    });
+    
+    // Optional: Enlarge cursors when hovering over interactive elements
+    const interactiveElements = document.querySelectorAll('a, input, button');
+    interactiveElements.forEach(elem => {
+      elem.addEventListener('mouseenter', () => {
+        cursorInner.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        cursorOuter.style.transform = 'translate(-50%, -50%) scale(2)';
+      });
+      elem.addEventListener('mouseleave', () => {
+        cursorInner.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursorOuter.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>
