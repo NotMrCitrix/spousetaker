@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
 import os
 import sqlite3
+from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
 # Configuration
@@ -42,35 +42,33 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Validate presence of username and file parts
+        # Validate that username and file are provided
         if 'username' not in request.form or not request.form['username'].strip():
             return redirect(request.url)
         if 'image' not in request.files:
             return redirect(request.url)
-            
+        
         username = request.form['username'].strip()
         file = request.files['image']
-        
         if file.filename == '':
             return redirect(request.url)
         
         if file and allowed_file(file.filename):
-            # Secure the filename and save the file
             filename = secure_filename(file.filename)
-            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(save_path)
-            # Insert the image info (with username) into the database
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             conn = get_db_connection()
             conn.execute('INSERT INTO images (username, filename) VALUES (?, ?)', (username, filename))
             conn.commit()
             conn.close()
             return redirect(url_for('index'))
     
-    # For GET requests, fetch all images (latest first)
+    # GET: fetch images from the database (latest first)
     conn = get_db_connection()
     images = conn.execute('SELECT * FROM images ORDER BY uploaded_at DESC').fetchall()
     conn.close()
     return render_template('index.html', images=images)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use the PORT environment variable if available (Render sets it), default to 5000 locally
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
